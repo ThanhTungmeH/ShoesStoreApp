@@ -9,9 +9,9 @@ import kotlinx.coroutines.withContext
 class CloudinaryHelp() {
     private val cloudinary = Cloudinary(
         ObjectUtils.asMap(
-        "cloud_name", "dpwbvm654",
-        "api_key", "762595391671652",
-        "api_secret", "nGHWVz_hbCEJ7EzpzIxa_Yq-DJE"
+        "cloud_name", "your cloudname",
+        "api_key", "your api key",
+        "api_secret", "your api secret"
     ))
 
     suspend fun uploadImage(imagePath: String): String? {

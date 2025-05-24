@@ -18,16 +18,14 @@ class CartController {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    fun getUserId(): String {
-        return auth.currentUser?.uid ?: "guest"
-    }
+
 
     fun listenToUserCart(
         onSuccess: () -> Unit = {},
         onError: (String) -> Unit = {}
     ) {
         _isLoading.value = true
-        val userId = getUserId()
+        val userId = auth.currentUser?.uid ?: "guest"
 
         db.collection("carts")
             .whereEqualTo("userId", userId)
@@ -71,11 +69,8 @@ class CartController {
         onSuccess: () -> Unit = {},
         onError: (String) -> Unit = {}
     ) {
-        val userId = getUserId()
-        if (userId == "guest") {
-            onError("Please login to add items to cart")
-            return
-        }
+        val userId = auth.currentUser?.uid ?: "guest"
+
 
         // Check if the item already exists in cart with same size
         val existingItem = _cartItems.value.find {
@@ -167,7 +162,7 @@ class CartController {
         onSuccess: () -> Unit = {},
         onError: (String) -> Unit = {}
     ) {
-        val userId = getUserId()
+        val userId = auth.currentUser?.uid ?: "guest"
         if (userId == "guest") {
             onError("Please login to manage cart")
             return

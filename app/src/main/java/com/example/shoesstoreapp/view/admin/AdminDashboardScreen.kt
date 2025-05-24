@@ -78,7 +78,7 @@ fun AdminDashboardScreen(navController: NavController) {
                         color = Color(0xFF4CAF50)
                     )
                     StatCard(
-                        title = "Đơn Hàng",
+                        title = "Orders",
                         value ="${totalOrders.value}",
                         icon = Icons.Outlined.ShoppingCart,
                         modifier = Modifier.weight(1f),
@@ -89,14 +89,14 @@ fun AdminDashboardScreen(navController: NavController) {
                 // Products and Users Stats
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     StatCard(
-                        title = "Tổng Sản Phẩm",
+                        title = "Total product",
                         value = "${totalProducts.value}",
                         icon = Icons.Outlined.Inventory2, // Changed from Inventory2
                         modifier = Modifier.weight(1f),
                         color = Color(0xFFFFA000)
                     )
                     StatCard(
-                        title = "Khách Hàng",
+                        title = "Clients",
                         value = "${totalUsers.value}",
                         icon = Icons.Filled.Person, // Changed from Outlined.People
                         modifier = Modifier.weight(1f),
@@ -163,7 +163,7 @@ fun AdminDashboardScreen(navController: NavController) {
                                 contentDescription = null,
                                 modifier = Modifier.padding(end = 8.dp)
                             )
-                            Text("Quản Lý Sản Phẩm")
+                            Text("Manage products")
                         }
                     }
 
@@ -178,27 +178,14 @@ fun AdminDashboardScreen(navController: NavController) {
                                 contentDescription = null,
                                 modifier = Modifier.padding(end = 8.dp)
                             )
-                            Text("Quản Lý Đơn Hàng")
+                            Text("Manage orders")
                         }
                     }
 
                     Button(
-                        onClick = { /* Navigate to Users */ },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9C27B0))
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Filled.Person, // Changed from Outlined.People
-                                contentDescription = null,
-                                modifier = Modifier.padding(end = 8.dp)
-                            )
-                            Text("Quản Lý Người Dùng")
-                        }
-                    }
-
-                    Button(
-                        onClick = { /* Generate Reports */ },
+                        onClick = {
+                            navController.navigate("report_and_statistics")
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA000))
                     ) {
@@ -208,7 +195,7 @@ fun AdminDashboardScreen(navController: NavController) {
                                 contentDescription = null,
                                 modifier = Modifier.padding(end = 8.dp)
                             )
-                            Text("Báo Cáo & Thống Kê")
+                            Text("Reports & Statistics")
                         }
                     }
                 }

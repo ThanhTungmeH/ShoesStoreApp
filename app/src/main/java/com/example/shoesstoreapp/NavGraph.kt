@@ -21,11 +21,14 @@ import com.example.shoesstoreapp.view.user.SignupScreen
 import com.example.shoesstoreapp.view.admin.AdminDashboardScreen
 import com.example.shoesstoreapp.view.admin.ManageOrderScreen
 import com.example.shoesstoreapp.view.admin.ManageProductScreen
+import com.example.shoesstoreapp.view.admin.ReportsAndStatisticsScreen
 import com.example.shoesstoreapp.view.user.CartScreen
 import com.example.shoesstoreapp.view.user.CheckoutScreen
 import com.example.shoesstoreapp.view.user.MyOrdersScreen
 import com.example.shoesstoreapp.view.user.OrderTrackingScreen
 import com.example.shoesstoreapp.view.user.ProductListScreen
+import com.example.shoesstoreapp.view.user.ResetPasswordScreen
+import com.example.shoesstoreapp.view.user.VerifyCodeScreen
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 
 @Composable
@@ -39,6 +42,7 @@ fun AppNavGraph(navController: NavHostController, authController: AuthController
         ) }
         composable("signup") { SignupScreen(navController, authController) }
         composable("forgot_password") { ForgotPasswordScreen(navController) }
+        composable("report_and_statistics") { ReportsAndStatisticsScreen(navController) }
         composable ("home") { HomeScreen(navController) }
         composable ("admin_home" ){AdminDashboardScreen(navController) }
         composable ("manage_product"){ ManageProductScreen(navController) }

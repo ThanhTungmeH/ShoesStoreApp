@@ -303,7 +303,7 @@ fun FilterDialog(
     onPriceRangeSelected: (ClosedFloatingPointRange<Float>) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val brands = listOf("Nike", "Adidas", "Puma" )
+    val brands = listOf("Nike", "Adidas", "shoes" )
     var tempBrand by remember { mutableStateOf(currentBrand) }
     var tempPriceRange by remember { mutableStateOf(currentPriceRange) }
 

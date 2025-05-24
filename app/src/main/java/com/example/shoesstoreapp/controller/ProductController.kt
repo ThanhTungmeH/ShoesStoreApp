@@ -192,9 +192,16 @@ class ProductController {
         sizes: List<String>,
         quantity: Int,
         imagePath: String,
-        reviews: List<Review> = emptyList()
+        preserveReviews: Boolean = true
     ): Boolean {
         return try {
+            var reviews = emptyList<Map<String, Any>>()
+            var rating = 0.0
+            if (preserveReviews) {
+                val document = db.collection("products").document(productId).get().await()
+                reviews = document.get("reviews") as? List<Map<String, Any>> ?: emptyList()
+                rating = document.getDouble("rating") ?: 0.0
+            }
             val imageUrl = if (imagePath.startsWith("http")) {
                 // Ảnh chưa đổi → giữ nguyên URL
                 imagePath
@@ -212,6 +219,7 @@ class ProductController {
                 "image" to imageUrl,
                 "quantity" to quantity,
                 "reviews" to reviews,
+                "rating" to rating
             )
 
             db.collection("products")
@@ -251,6 +259,33 @@ class ProductController {
             }
         } catch (e: Exception) {
             // Handle error
+        }
+    }
+    suspend fun decreaseProductQuantity(productId: String, decreaseAmount: Int): Boolean {
+        return try {
+            // Lấy tham chiếu đến sản phẩm
+            val productRef = db.collection("products").document(productId)
+
+            // Thực hiện transaction để đảm bảo tính nhất quán
+            db.runTransaction { transaction ->
+                // Lấy số lượng hiện tại
+                val snapshot = transaction.get(productRef)
+                val currentQuantity = snapshot.getLong("quantity")?.toInt() ?: 0
+
+                // Kiểm tra có đủ hàng không
+                if (currentQuantity < decreaseAmount) {
+                    throw Exception("Sản phẩm không đủ số lượng trong kho")
+                }
+
+                // Giảm số lượng
+                transaction.update(productRef, "quantity", currentQuantity - decreaseAmount)
+
+                // Trả về giá trị để hoàn thành transaction
+                null
+            }.await()
+            true
+        } catch (e: Exception) {
+            false
         }
     }
 }

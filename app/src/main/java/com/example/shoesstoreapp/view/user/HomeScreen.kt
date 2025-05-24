@@ -48,7 +48,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
-
 import com.example.shoesstoreapp.R
 import com.example.shoesstoreapp.controller.ProductController
 import com.example.shoesstoreapp.model.Product
@@ -59,7 +58,6 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.toString
 
 
 @Composable
@@ -131,20 +129,35 @@ fun HomeScreen(
                             ProductItem("https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg", "Jordan"),
                         )
                     )
-
+                    val maxProducts = 12
+                    val featuredProducts = productController.products.take(maxProducts)
+                    val bestSellingProducts = productController.products.drop(maxProducts).take(maxProducts)
                     Spacer(modifier = Modifier.height(16.dp))
                     AnimatedVisibility(
                         visible = productController.products.isNotEmpty(),
                         enter = fadeIn() + expandVertically(),
                         exit = fadeOut() + shrinkVertically()
                     ) {
+
                         ProductGridSection(
                             title = "Featured Products",
-                            products = productController.products,
+                            products = featuredProducts,
+                            navController = navController
+                        )
+
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    AnimatedVisibility(
+                        visible = productController.products.isNotEmpty(),
+                        enter = fadeIn() + expandVertically(),
+                        exit = fadeOut() + shrinkVertically()
+                    ) {
+                        ProductGridSection(
+                            title = "Best selling Product",
+                            products = bestSellingProducts,
                             navController = navController
                         )
                     }
-
                     if (productController.products.isEmpty() && !isRefreshing) {
                         Box(
                             modifier = Modifier

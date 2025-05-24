@@ -108,6 +108,33 @@ suspend fun getCurrentUserRole(): String {
         "user"
     }
 }
+    fun sendPasswordResetEmail(email: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        auth.sendPasswordResetEmail(email)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { e ->
+                onError(e.message ?: "Failed to send reset email")
+            }
+    }
+    fun verifyPasswordResetCode(code: String, onSuccess: (String) -> Unit, onError: (String) -> Unit) {
+        auth.verifyPasswordResetCode(code)
+            .addOnSuccessListener { email ->
+                onSuccess(email)
+            }
+            .addOnFailureListener { e ->
+                onError(e.message ?: "Invalid verification code")
+            }
+    }
+    fun confirmPasswordReset(code: String, newPassword: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        auth.confirmPasswordReset(code, newPassword)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { e ->
+                onError(e.message ?: "Failed to reset password")
+            }
+    }
 
 }
 sealed class LoginResult {

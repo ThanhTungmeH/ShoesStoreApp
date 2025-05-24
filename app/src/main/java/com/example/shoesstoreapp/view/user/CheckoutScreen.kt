@@ -252,7 +252,7 @@ private fun PaymentSection(
     selectedOption: String,
     onOptionSelected: (String) -> Unit
 ) {
-    val options = listOf("Credit Card", "VNPay")
+    val options = listOf("Cash", "Banking online")
 
     CheckoutSection(
         title = "PAYMENT",
@@ -276,10 +276,10 @@ private fun PaymentSection(
                             Text(text = option, fontSize = 14.sp)
                         }
 
-                        if (option == "VNPay") {
+                        if (option == "Banking online") {
                             Text("VNPay", color = Color(0xFF0066FF))
-                        } else if (option == "Credit Card") {
-                            Text("Visa *1234", fontSize = 14.sp)
+                        } else if (option == "Cash") {
+                            Text("", fontSize = 14.sp)
                         }
                     }
                 }

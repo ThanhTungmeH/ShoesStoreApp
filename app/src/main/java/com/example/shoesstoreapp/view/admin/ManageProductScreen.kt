@@ -16,8 +16,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Deblur
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults.buttonColors
@@ -86,9 +88,13 @@ fun ProductListScreen(
     var isLoading by remember { mutableStateOf(false) }
     var showSuccessMessage by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedBrand by remember { mutableStateOf<String?>(null) }
+    var priceRange by remember { mutableStateOf(0f..1000f) }
     val coroutineScope = rememberCoroutineScope()
     var selectedImagePath by remember { mutableStateOf<String?>(null) }
     val context = rememberContext()
+
     val pickImageLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         selectedImagePath = uri?.let { getRealPathFromURI(context, it) }
     }
@@ -99,7 +105,15 @@ fun ProductListScreen(
             onError = { errorMessage = it.message }
         )
     }
+// Filter products based on search query
+    val filteredProducts = productController.products.filter { product ->
+        val matchesSearch = product.name.contains(searchQuery, ignoreCase = true) ||
+                product.brand.contains(searchQuery, ignoreCase = true)
+        val matchesBrand = selectedBrand == null || product.brand == selectedBrand
+        val matchesPrice = product.price >= priceRange.start && product.price <= priceRange.endInclusive
 
+        matchesSearch && matchesBrand && matchesPrice
+    }
     Column {
         TopAppBar(
             title = { Text("Back") },
@@ -109,9 +123,32 @@ fun ProductListScreen(
                 }
             }
         )
-
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                modifier = Modifier.weight(1f),
+                placeholder = { Text("Search products...") },
+                singleLine = true,
+                leadingIcon = {
+                    Icon(Icons.Default.Search, contentDescription = "Search")
+                },
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(onClick = { searchQuery = "" }) {
+                            Icon(Icons.Default.Clear, "Clear search")
+                        }
+                    }
+                }
+            )
+        }
         LazyColumn(modifier = Modifier.weight(1f)) {
-            items(productController.products) { product ->
+            items(filteredProducts) { product ->
                 ProductItem(product, onClick = {
                     navController.navigate("productDetail/${product.id}")
                 })
@@ -141,7 +178,7 @@ fun ProductListScreen(
                     Text("Description")
                     TextField(value = productDescription, onValueChange = { productDescription = it })
                     Spacer( Modifier.height(8.dp))
-                    val brandList = listOf("Nike", "Adidas", "Puma", "Vans")
+                    val brandList = listOf("Nike", "Adidas", "Puma", "Jordan")
                     BrandDropdown(
                         brandList = brandList,
                         selectedBrand = productBrand,
@@ -309,7 +346,7 @@ fun ProductItem(product: Product, onClick: () -> Unit,productController: Product
             ) {
                 Text(text = product.name, fontWeight = FontWeight.Bold, fontSize = 20.sp)
                 Row(modifier=Modifier.fillMaxWidth()) {
-                    Text(text = product.description, fontSize = 17.sp, color = Color.DarkGray)
+                    Text(text = product.brand, fontSize = 17.sp, color = Color.DarkGray)
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
                         text =  product.quantity.toString(),
@@ -384,7 +421,7 @@ fun ProductItem(product: Product, onClick: () -> Unit,productController: Product
                         TextField(value = editDescription, onValueChange = { editDescription = it })
 
                         Spacer( Modifier.height(8.dp))
-                        val brandList = listOf("Nike", "Adidas", "Puma", "Vans")
+                        val brandList = listOf("Nike", "Adidas", "Puma", "Jordan")
 
                         BrandDropdown(
                             brandList = brandList,

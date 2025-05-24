@@ -11,12 +11,14 @@ import com.google.firebase.firestore.Query
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.tasks.await
+import kotlin.text.get
+import kotlin.text.toInt
 
 class OrderController {
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
     private val ordersCollection = db.collection("orders")
-
+private val productController = ProductController()
     private val _currentOrder = MutableStateFlow<Order?>(null)
     val currentOrder: StateFlow<Order?> = _currentOrder
 
@@ -29,6 +31,13 @@ class OrderController {
     ) {
         try {
             val userId = auth.currentUser?.uid ?: throw Exception("User not authenticated")
+            for (item in items) {
+                val success = productController.decreaseProductQuantity(item.productId, item.quantity)
+                if (!success) {
+                    onError("Không đủ số lượng sản phẩm ${item.productName}")
+                    return
+                }
+            }
             val order = Order(
                 userId = userId,
                 items = items,
@@ -38,12 +47,10 @@ class OrderController {
             )
 
             val docRef = ordersCollection.add(order).await()
-
             // Update the order with its ID
             ordersCollection.document(docRef.id)
                 .update("id", docRef.id)
                 .await()
-
             onSuccess(docRef.id)
         } catch (e: Exception) {
             onError(e.message ?: "Failed to create order")
